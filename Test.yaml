@@ -1,0 +1,312 @@
+views:
+  - title: Consumptionsss
+    path: consumption
+    icon: mdi:chart-donut
+    theme: default
+    cards:
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Solar Production - Today
+        graph_span: 24h
+        span:
+          start: day
+        apex_config:
+          chart:
+            type: bar
+            height: 250
+            stacked: true
+          plotOptions:
+            bar:
+              columnWidth: 80%
+          dataLabels:
+            enabled: false
+          yaxis:
+            title:
+              text: kWh
+          xaxis:
+            labels:
+              format: HH:mm
+          legend:
+            show: true
+            position: top
+          colors:
+            - '#66b2ff'
+            - '#ffcc33'
+        series:
+          - entity: sensor.daily_battery_charge_from_pv
+            name: To Battery
+            type: column
+            color: '#66b2ff'
+            group_by:
+              func: max
+              duration: 1h
+          - entity: sensor.daily_direct_energy_consumption
+            name: Direct use
+            type: column
+            color: '#ffcc33'
+            group_by:
+              func: max
+              duration: 1h
+        card_mod:
+          style: |
+            ha-card {
+              width: 200% !important;
+              max-width: none !important;
+              margin: 0 auto !important;
+              margin-left: -50% !important;
+              margin-right: -50% !important;
+              position: relative !important;
+              left: 50% !important;
+              transform: translateX(-50%) !important;
+            }
+            apexcharts-card {
+              width: 200% !important;
+            }
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Energy Sources - Today
+        apex_config:
+          chart:
+            type: donut
+            height: 250
+          dataLabels:
+            enabled: true
+          legend:
+            show: true
+            position: right
+          colors:
+            - '#ff6666'
+            - '#66b2ff'
+            - '#ffcc33'
+        series:
+          - entity: sensor.daily_imported_energy
+            name: From Grid
+          - entity: sensor.daily_battery_discharge
+            name: From Battery
+          - entity: sensor.daily_direct_energy_consumption
+            name: Direct use
+        card_mod:
+          style: |
+
+            ha-card {
+
+              width: 100% !important;
+
+              max-width: none !important;
+
+            }
+
+            apexcharts-card {
+
+              width: 100% !important;
+
+            }
+      - type: entities
+        title: Daily Energy Summary
+        entities:
+          - entity: sensor.daily_pv_generation
+            name: PV Generation
+          - entity: sensor.daily_direct_energy_consumption
+            name: Direct Solar Use
+          - entity: sensor.daily_battery_charge_from_pv
+            name: Battery Charge from PV
+          - entity: sensor.daily_battery_discharge
+            name: Battery Discharge
+          - entity: sensor.daily_imported_energy
+            name: Imported from Grid
+          - entity: sensor.daily_exported_energy
+            name: Exported to Grid
+        state_color: false
+      - type: entities
+        title: Current Power
+        entities:
+          - entity: sensor.total_dc_power
+            name: Solar Power
+          - entity: sensor.load_power
+            name: Load Power
+          - entity: sensor.battery_charging_power
+            name: Battery Charging
+          - entity: sensor.battery_discharging_power
+            name: Battery Discharging
+          - entity: sensor.import_power
+            name: Import Power
+          - entity: sensor.export_power
+            name: Export Power
+        state_color: false
+      - type: entities
+        title: Total Energy Summary
+        entities:
+          - entity: sensor.total_pv_generation
+            name: Total PV Generation
+          - entity: sensor.total_direct_energy_consumption
+            name: Total Direct Solar Use
+          - entity: sensor.total_battery_charge_from_pv
+            name: Total Battery Charge from PV
+          - entity: sensor.total_battery_discharge
+            name: Total Battery Discharge
+          - entity: sensor.total_imported_energy
+            name: Total Imported from Grid
+          - entity: sensor.total_exported_energy
+            name: Total Exported to Grid
+          - entity: sensor.total_consumed_energy
+            name: Total Consumed Energy
+        state_color: false
+      - type: horizontal-stack
+        title: Battery gauge
+        cards:
+          - type: gauge
+            entity: sensor.battery_level
+            min: 0
+            max: 100
+            severity:
+              green: 70
+              yellow: 40
+              red: 20
+            name: Battery Level
+          - type: entities
+            entities:
+              - entity: sensor.battery_capacity
+                name: Capacity
+              - entity: sensor.battery_state_of_health
+                name: Health
+              - entity: sensor.battery_temperature
+                name: Temperature
+            state_color: false
+      - type: horizontal-stack
+        title: Short info 
+        card_mod:
+          style: |
+            ha-card {
+              width: 200% !important;
+              max-width: none !important;
+              overflow: hidden !important;
+            }
+            .horizontal-stack {
+              width: 200% !important;
+            }
+            ha-view {
+              overflow: hidden !important;
+            }
+        cards:
+          - type: markdown
+            content: >
+
+              <div style="text-align: center; padding: 24px; min-height: 200px;
+              display: flex; flex-direction: column; align-items: center;
+              justify-content: center;">
+
+                <ha-icon icon="mdi:transmission-tower" style="color: blue; width: 80px; height: 80px; margin-bottom: 12px;"></ha-icon>
+
+                <div style="font-size: 28px; font-weight: bold; margin-bottom: 12px;">From Grid</div>
+
+                <div style="font-size: 24px; font-weight: bold; color: var(--primary-text-color);">
+
+                  {{ states('sensor.daily_imported_energy') | float | round(2) }} kWh
+
+                </div>
+
+              </div>
+            card_mod:
+              style: |
+
+                ha-card {
+
+                  background-color: white !important;
+
+                  border-radius: 20px;
+
+                  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+
+                  overflow: visible !important;
+
+                }
+
+                ha-card .card-content {
+
+                  overflow: visible !important;
+
+                  height: auto !important;
+
+                }
+          - type: markdown
+            content: >
+
+              <div style="text-align: center; padding: 24px; min-height: 200px;
+              display: flex; flex-direction: column; align-items: center;
+              justify-content: center;">
+
+                <ha-icon icon="mdi:battery" style="color: blue; width: 80px; height: 80px; margin-bottom: 12px;"></ha-icon>
+
+                <div style="font-size: 28px; font-weight: bold; margin-bottom: 12px;">From Battery</div>
+
+                <div style="font-size: 24px; font-weight: bold; color: var(--primary-text-color);">
+
+                  {{ states('sensor.daily_battery_discharge') | float | round(2) }} kWh
+
+                </div>
+
+              </div>
+            card_mod:
+              style: |
+
+                ha-card {
+
+                  background-color: white !important;
+
+                  border-radius: 20px;
+
+                  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+
+                  overflow: visible !important;
+
+                }
+
+                ha-card .card-content {
+
+                  overflow: visible !important;
+
+                  height: auto !important;
+
+                }
+          - type: markdown
+            content: >
+
+              <div style="text-align: center; padding: 24px; min-height: 200px;
+              display: flex; flex-direction: column; align-items: center;
+              justify-content: center;">
+
+                <ha-icon icon="mdi:solar-power" style="color: orange; width: 80px; height: 80px; margin-bottom: 12px;"></ha-icon>
+
+                <div style="font-size: 28px; font-weight: bold; margin-bottom: 12px;">Direct Solar</div>
+
+                <div style="font-size: 24px; font-weight: bold; color: var(--primary-text-color);">
+
+                  {{ states('sensor.daily_direct_energy_consumption') | float | round(2) }} kWh
+
+                </div>
+
+              </div>
+            card_mod:
+              style: |
+
+                ha-card {
+
+                  background-color: white !important;
+
+                  border-radius: 20px;
+
+                  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+
+                  overflow: visible !important;
+
+                }
+
+                ha-card .card-content {
+
+                  overflow: visible !important;
+
+                  height: auto !important;
+
+                }
